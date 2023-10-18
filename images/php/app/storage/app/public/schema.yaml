@@ -1,0 +1,314 @@
+openapi: 3.0.3
+info:
+  version: 1.0-oas3
+  title: MTG
+  description: >-
+    Magic - The Gathering
+servers:
+  - url: 'http://mtg-homework'
+tags: []
+paths:
+  /deck:
+    post:
+      tags:
+        - Decks
+      description: Create a New Deck
+      summary: Create Deck
+      operationId: CreateDeck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDeckRequest'
+        description: Properties of the Deck that will be created.
+      responses:
+        '200':
+          description: Return created Deck
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckResource'
+        '422':
+          description: Fields validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Failed due to processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonError'
+  /deck/{deck_uuid}:
+    parameters:
+      - $ref: '#/components/parameters/deck_uuid'
+    get:
+      tags:
+        - Decks
+      description: Get Deck by uuid
+      summary: Get Deck by uuid
+      operationId: GetDeck
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeckResource'
+        '405':
+          description: Http method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Fields validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonError'
+  /deck/{deck_uuid}/add-card:
+    parameters:
+      - $ref: '#/components/parameters/deck_uuid'
+    post:
+      tags:
+        - Decks
+        - Cards
+      description: Add Card to Deck
+      summary: Add Card to Deck
+      operationId: AddCardToDeck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCardToDeckRequest'
+      responses:
+        '200':
+          description: Return added Card
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResource'
+        '422':
+          description: Fields validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Failed due to processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonError'
+components:
+  parameters:
+    deck_uuid:
+      in: path
+      name: deck_uuid
+      example: 4a97a08c-c853-4c51-84c8-72e54928cbfa
+      required: true
+      description: Universally unique identifier
+      schema:
+        type: string
+  schemas:
+    CommonError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Access key empty
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            example: '405 Method Not Allowed'
+      additionalProperties: false
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Field empty
+        errors:
+          type: array
+          items:
+            type: string
+            example: validation.required
+    CreateDeckRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of deck
+          example: John's deck
+        description:
+          type: string
+          description: Description of deck
+          example: This deck is for John and nobody else
+      additionalProperties: false
+    AddCardToDeckRequest:
+      type: object
+      required:
+        - card_uuid
+      properties:
+        card_uuid:
+          type: string
+          description: Universally Unique Identifier
+          example: 6aa99441-19c1-4e31-816d-a5882fae48af
+      additionalProperties: false
+    DeckResource:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - card_uuids
+        - average_cmc
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Universally Unique Identifier
+          example: 4a97a08c-c853-4c51-84c8-72e54928cbfa
+        name:
+          type: string
+          description: Name of deck
+          example: John's deck
+        description:
+          type: string
+          description: Description of deck
+          example: This deck is for John and nobody else
+          nullable: true
+        card_uuids:
+          type: array
+          items:
+            type: string
+            example: 6aa99441-19c1-4e31-816d-a5882fae48af
+        average_cmc:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          description: Record creation time
+          example: 2021-02-12T08:51:50.000000Z
+        updated_at:
+          type: string
+          description: Record update time
+          example: 2021-02-12T08:51:50.000000Z
+      additionalProperties: false
+    CardResource:
+      type: object
+      required:
+        - uuid
+        - name
+        - cmc
+        - type
+        - rarity
+        - set
+        - setName
+        - layout
+      properties:
+        uuid:
+          type: string
+          description: Universally Unique Identifier
+          example: 6aa99441-19c1-4e31-816d-a5882fae48af
+        name:
+          type: string
+          description: The card name. For split, double-faced and flip cards, just the name of one side of the card. Basically each ‘sub-card’ has its own record
+          example: Condemn
+        names:
+          type: array
+          items:
+            type: string
+            example: Archangel Avacyn
+        multiverseId:
+          type: integer
+          description: The multiverseId of the card on Wizard’s Gatherer web page. Cards from sets that do not exist on Gatherer will NOT have a multiverseid. Sets not on Gatherer are ATH, ITP, DKM, RQS, DPA and all sets with a 4 letter code that starts with a lowercase ‘p’
+          example: 182282
+          nullable: true
+        layout:
+          type: string
+          description: The card layout
+          enum:
+            - normal
+            - split
+            - flip
+            - double-faced
+            - token
+            - plane
+            - scheme
+            - phenomenon
+            - leveler
+            - vanguard
+            - aftermath
+          example: vanguard
+        manaCost:
+          type: string
+          description: The mana cost of this card. Consists of one or more mana symbols. (use cmc and colors to query)
+          example: {3}{G}{G}
+          nullable: true
+        cmc:
+          type: integer
+          description: Converted mana cost. Always a number
+          example: 1
+        colors:
+          type: array
+          items:
+            type: string
+            example: White
+        colorIdentity:
+          type: array
+          items:
+            type: string
+            example: W
+        type:
+          type: string
+          description: The card type. This is the type you would see on the card if printed today. Note! The dash is a UTF8 ‘long dash’ as per the MTG rules
+          example: Creature — Human Cleric
+        supertypes:
+          type: array
+          description: The supertypes of the card. These appear to the far left of the card type
+          items:
+            type: string
+            example: Legendary
+        subtypes:
+          type: array
+          items:
+            type: string
+            example: Arcane
+        types:
+          type: array
+          items:
+            type: string
+            example: Vanguard
+# TODO finish adding card properties
+        deck_uuids:
+          type: array
+          items:
+            type: string
+            example: 4a97a08c-c853-4c51-84c8-72e54928cbfa
+        created_at:
+          type: string
+          description: Record creation time
+          example: 2021-02-12T08:51:50.000000Z
+        updated_at:
+          type: string
+          description: Record update time
+          example: 2021-02-12T08:51:50.000000Z
+      additionalProperties: false

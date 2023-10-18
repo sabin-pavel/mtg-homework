@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Ramsey\Uuid\Uuid;
@@ -20,8 +21,11 @@ use Ramsey\Uuid\Uuid;
 class Deck extends Model
 {
     use HasUuids;
+    use HasFactory;
 
     const MAX_NUMBER_OF_CARDS_PER_DECK = 30;
+
+    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -52,12 +56,20 @@ class Deck extends Model
 
     public function toArray()
     {
-        return array_merge(parent::toArray(), [
+        $additionalProperties =  [
             'card_uuids' => $this->cards()->allRelatedIds()->toArray(),
-            'average_cmc' => round(
-                $this->cards()->sum('cmc') / $this->cards()->where('type', '!=', 'Land')->count(),
+            'average_cmc' => 0,
+        ];
+
+        $cardsCountExcludingLandType = $this->cards()->where('type', '!=', 'Land')->count();
+
+        if ($cardsCountExcludingLandType) {
+            $additionalProperties['average_cmc'] = round(
+                $this->cards()->sum('cmc') / $cardsCountExcludingLandType,
                 2
-            ),
-        ]);
+            );
+        }
+
+        return array_merge(parent::toArray(), $additionalProperties);
     }
 }

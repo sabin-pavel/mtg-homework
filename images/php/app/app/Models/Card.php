@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property $manaCost
  * @property $cmc
  * @property $colors
+ * @property $colorIdentity
  * @property $names
  * @property $type
  * @property $supertypes
@@ -54,6 +56,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Card extends Model
 {
+    use HasFactory;
+
+    public $incrementing = false;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -67,6 +73,7 @@ class Card extends Model
         'manaCost',
         'cmc',
         'colors',
+        'colorIdentity',
         'names',
         'type',
         'supertypes',
@@ -106,6 +113,7 @@ class Card extends Model
         'isReserved'    => 'boolean',
         'isStarter'     => 'boolean',
         'colors'        => 'array',
+        'colorIdentity' => 'array',
         'names'         => 'array',
         'supertypes'    => 'array',
         'types'         => 'array',
@@ -117,6 +125,16 @@ class Card extends Model
         'legalities'    => 'array',
     ];
 
+    public function scopeWithUuid(Builder $query, $uuid)
+    {
+        return $query->where('uuid', $uuid);
+    }
+
+    public function toArray()
+    {
+        return array_merge(parent::toArray(), ['deck_uuids' => $this->decks()->allRelatedIds()->toArray()]);
+    }
+
     public function decks(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -127,15 +145,5 @@ class Card extends Model
             'uuid',
             'id',
         );
-    }
-
-    public function scopeWithUuid(Builder $query, $uuid)
-    {
-        return $query->where('uuid', $uuid);
-    }
-
-    public function toArray()
-    {
-        return array_merge(parent::toArray(), ['deck_uuids' => $this->decks()->allRelatedIds()->toArray()]);
     }
 }

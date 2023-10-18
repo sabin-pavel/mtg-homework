@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('manaCost')->nullable();
             $table->integer('cmc')->default(0);
             $table->json('colors')->nullable();
+            $table->json('colorIdentity')->nullable();
             $table->json('names')->nullable();
             $table->string('type');
             $table->json('supertypes')->nullable();
