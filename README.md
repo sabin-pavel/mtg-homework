@@ -71,12 +71,20 @@ docker-compose exec php sh
 # inside the container
 php artisan migrate
 php artisan cache:clear
-./vendor/bin/pest
+```
+
+## Change ownership of `storage/logs` folder
+
+```sh
+docker-compose exec php sh
+# inside the container
+chown -R www-data:www-data storage/logs
 ```
 
 ## Running tests with pest
 
-!NOTE! Make sure you run the migrations first
+!NOTE! Make sure you run the migrations before running tests
+!NOTE! Make sure you change ownership of `storage/logs` before running tests
 
 ```sh
 docker-compose exec php sh

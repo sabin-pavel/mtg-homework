@@ -15,9 +15,5 @@ RUN set -xe \
     && rm -rf /tmp/* \
     && apk del .memcached-deps .phpize-deps
 
-# Install & Run: composer command
+# Install: composer command
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
-COPY --chown=www-data:www-data . /var/www/html
-
-USER www-data
