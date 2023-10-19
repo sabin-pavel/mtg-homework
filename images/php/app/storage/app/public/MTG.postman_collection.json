@@ -1,0 +1,123 @@
+{
+	"info": {
+		"_postman_id": "8c40076f-7614-4825-82cc-8b4c1624ef69",
+		"name": "MTG",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "816021",
+		"_collection_link": "https://restless-water-891436.postman.co/workspace/PowerCloud~4786c913-c186-42fa-a583-7f38d3ee6f18/collection/816021-8c40076f-7614-4825-82cc-8b4c1624ef69?action=share&source=collection_link&creator=816021"
+	},
+	"item": [
+		{
+			"name": "Create Deck",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"first deck\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://mtg-homework/deck",
+					"protocol": "http",
+					"host": [
+						"mtg-homework"
+					],
+					"path": [
+						"deck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Card to Deck",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"card_uuid\": \"5f8287b1-5bb6-5f4c-ad17-316a40d5bb0c\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://mtg-homework/deck/{deck_id}/add-card",
+					"protocol": "http",
+					"host": [
+						"mtg-homework"
+					],
+					"path": [
+						"deck",
+						"{deck_id}",
+						"add-card"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deck",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"card_uuid\": \"5f8287b1-5bb6-5f4c-ad17-316a40d5bb0c\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://mtg-homework/deck/{deck_id}",
+					"protocol": "http",
+					"host": [
+						"mtg-homework"
+					],
+					"path": [
+						"deck",
+						"{deck_id}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Cards",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://mtg-homework/cards",
+					"protocol": "http",
+					"host": [
+						"mtg-homework"
+					],
+					"path": [
+						"cards"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
