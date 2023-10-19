@@ -75,6 +75,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommonError'
+  /cards:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/layout'
+        - $ref: '#/components/parameters/cmc'
+        - $ref: '#/components/parameters/colors'
+        - $ref: '#/components/parameters/colorIdentity'
+        - $ref: '#/components/parameters/type'
+        - $ref: '#/components/parameters/supertypes'
+        - $ref: '#/components/parameters/types'
+        - $ref: '#/components/parameters/subtypes'
+        - $ref: '#/components/parameters/rarity'
+        - $ref: '#/components/parameters/set'
+        - $ref: '#/components/parameters/setName'
+        - $ref: '#/components/parameters/text'
+        - $ref: '#/components/parameters/flavor'
+        - $ref: '#/components/parameters/artist'
+        - $ref: '#/components/parameters/number'
+        - $ref: '#/components/parameters/power'
+        - $ref: '#/components/parameters/toughness'
+        - $ref: '#/components/parameters/loyalty'
+        - $ref: '#/components/parameters/language'
+        - $ref: '#/components/parameters/gameFormat'
+        - $ref: '#/components/parameters/legality'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/pageSize'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/random'
+        - $ref: '#/components/parameters/contains'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/multiverseid'
+      tags:
+        - Cards
+      description: Paginate the response using the page parameter. Each field below can be used as a query parameter. By default, fields that have a singular value such as rarity, set, and name will always use a logical “or” operator when querying with a list of values. Fields that can have multiple values such as colors, supertypes, and subtypes can use a logical “and” or a logical “or” operator. The accepted delimiters when querying fields are the pipe character or a comma character. The pipe represents a logical “or”, and a comma represents a logical “and”. The comma can only be used with fields that accept multiple values (like colors). Example:name=nissa, worldwaker|jace|ajani, caller More examples - colors=red,white,blue versus colors=red|white|blue
+      summary: Search for cards
+      operationId: SearchCards
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResource'
+        '405':
+          description: Http method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Fields validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonError'
   /deck/{deck_uuid}/add-card:
     parameters:
       - $ref: '#/components/parameters/deck_uuid'
@@ -115,11 +179,361 @@ components:
     deck_uuid:
       in: path
       name: deck_uuid
+      description: Universally unique identifier
       example: 4a97a08c-c853-4c51-84c8-72e54928cbfa
       required: true
-      description: Universally unique identifier
       schema:
         type: string
+    name:
+      in: query
+      name: name
+      description: The card name. For split, double-faced and flip cards, just the name of one side of the card. Basically each ‘sub-card’ has its own record
+      required: false
+      schema:
+        type: string
+        example: Condemn
+    layout:
+      in: query
+      name: layout
+      required: false
+      description: The card layout
+      schema:
+        type: string
+        enum:
+          - normal
+          - split
+          - flip
+          - double-faced
+          - token
+          - plane
+          - scheme
+          - phenomenon
+          - leveler
+          - vanguard
+          - aftermath
+        example: vanguard
+    cmc:
+      in: query
+      name: cmc
+      description: Converted mana cost. Always a number
+      required: false
+      schema:
+        type: integer
+        example: 1
+    colors:
+      in: query
+      name: colors
+      description: The card colors. Usually this is derived from the casting cost, but some cards are special (like the back of dual sided cards and Ghostfire)
+      required: false
+      schema:
+        type: string
+        example: 1
+        enum:
+          - White
+          - Blue
+          - Black
+          - Red
+          - Green
+          - White,Green
+          - Blue|Black
+    colorIdentity:
+      in: query
+      name: colorIdentity
+      description: The card’s color identity, by color code. [“Red”, “Blue”] becomes [“R”, “U”]. A card’s color identity includes colors from the card’s rules text
+      required: false
+      schema:
+        type: string
+        example: 1
+        enum:
+          - W
+          - B
+          - U
+          - R
+          - G
+          - W,G
+          - U|B
+    type:
+      in: query
+      name: type
+      description: The card type. This is the type you would see on the card if printed today. Note! The dash is a UTF8 ‘long dash’ as per the MTG rules
+      required: false
+      schema:
+        type: string
+        example: Creature — Human Cleric
+    supertypes:
+      in: query
+      name: supertypes
+      description: The supertypes of the card. These appear to the far left of the card type
+      required: false
+      schema:
+        type: string
+        example: Ongoing
+        enum:
+          - Basic
+          - Legendary
+          - Snow
+          - World
+          - Ongoing
+          - Basic,Snow
+          - Legendary|World
+    types:
+      in: query
+      name: types
+      description: The types of the card. These appear to the left of the dash in a card type
+      required: false
+      schema:
+        type: string
+        example: Enchantment
+        enum:
+          - Artifact
+          - Conspiracy
+          - Creature
+          - Enchantment
+          - Instant
+          - Land
+          - Phenomenon
+          - Plane
+          - Planeswalker
+          - Scheme
+          - Sorcery
+          - Tribal
+          - Vanguard
+          - Sorcery,Vanguard
+          - Phenomenon|Land
+    subtypes:
+      in: query
+      name: subtypes
+      description: The subtypes of the card. These appear to the right of the dash in a card type. Usually each word is its own subtype
+      required: false
+      schema:
+        type: string
+        example: Ongoing
+        enum:
+          - Trap
+          - Arcane
+          - Equipment
+          - Aura
+          - Human
+          - Rat
+          - Squirrel
+          - Arcane|Aura
+          - Human,Equipment
+    rarity:
+      in: query
+      name: rarity
+      description: The rarity of the card
+      required: false
+      schema:
+        type: string
+        example: Ongoing
+        enum:
+          - Common
+          - Uncommon
+          - Rare
+          - Mythic Rare
+          - Special
+          - Basic Land
+          - Uncommon|Rare
+          - Common,Special
+    set:
+      in: query
+      name: set
+      description: The set the card belongs to (set code)
+      required: false
+      schema:
+        type: string
+        example: KTK
+    setName:
+      in: query
+      name: setName
+      description: The name of the set the card belongs to
+      required: false
+      schema:
+        type: string
+        example: Khans of Tarkir
+    text:
+      in: query
+      name: text
+      description: The oracle text of the card. May contain mana symbols and other symbols
+      required: false
+      schema:
+        type: string
+        example: Archangel Avacyn enters the battlefield
+    flavor:
+      in: query
+      name: flavor
+      description: The flavor text of the card
+      required: false
+      schema:
+        type: string
+        example: The White Shield is not the burnished
+    artist:
+      in: query
+      name: artist
+      description: The artist of the card. This may not match what is on the card as MTGJSON corrects many card misprints
+      required: false
+      schema:
+        type: string
+        example: James Ryman
+    number:
+      in: query
+      name: number
+      description: The card number. This is printed at the bottom-center of the card in small text. This is a string, not an integer, because some cards have letters in their numbers
+      required: false
+      schema:
+        type: string
+        example: 29★
+    power:
+      in: query
+      name: power
+      description: The power of the card. This is only present for creatures. This is a string, not an integer, because some cards have powers like “1+*”
+      required: false
+      schema:
+        type: string
+        example: 1
+    toughness:
+      in: query
+      name: toughness
+      description: The toughness of the card. This is only present for creatures. This is a string, not an integer, because some cards have toughness like “1+*”
+      required: false
+      schema:
+        type: string
+        example: 2
+    loyalty:
+      in: query
+      name: loyalty
+      description: The loyalty of the card. This is only present for planeswalkers
+      required: false
+      schema:
+        type: string
+        example: 4
+    language:
+      in: query
+      name: language
+      description: The language the card is printed in. Use this parameter along with the name parameter when searching by foreignName
+      required: false
+      schema:
+        type: string
+        example: Italian
+    gameFormat:
+      in: query
+      name: gameFormat
+      description: The game format, such as Commander, Standard, Legacy, etc. (when used, legality defaults to Legal unless supplied)
+      required: false
+      schema:
+        type: string
+        example: Legacy
+        enum:
+          - Amonkhet Block
+          - Battle for Zendikar Block
+          - Classic
+          - Commander
+          - Extended
+          - Freeform
+          - Ice Age Block
+          - Innistrad Block
+          - Invasion Block
+          - Kaladesh Block
+          - Kamigawa Block
+          - Khans of Tarkir Block
+          - Legacy
+          - Lorwyn-Shadowmoor Block
+          - Masques Block
+          - Mirage Block
+          - Mirrodin Block
+          - Modern
+          - Odyssey Block
+          - Onslaught Block
+          - Prismatic
+          - Ravnica Block
+          - Return to Ravnica Block
+          - Scars of Mirrodin Block
+          - Shadows over Innistrad Block
+          - Shards of Alara Block
+          - Singleton 100
+          - Standard
+          - Tempest Block
+          - Theros Block
+          - Time Spiral Block
+          - Tribal Wars Legacy
+          - Un-Sets
+          - Urza Block
+          - Vintage
+          - Zendikar Block
+    legality:
+      in: query
+      name: legality
+      description: The legality of the card for a given format, such as Legal, Banned or Restricted
+      required: false
+      schema:
+        type: string
+        example: Legal
+        enum:
+          - Legal
+          - Banned
+          - Restricted
+    page:
+      in: query
+      name: page
+      description: The page of data to request
+      required: false
+      schema:
+        type: integer
+        example: 4
+        default: 1
+    pageSize:
+      in: query
+      name: pageSize
+      description: The amount of data to return in a single request. The default (and max) is 100
+      required: false
+      schema:
+        type: integer
+        example: 47
+        default: 100
+    orderBy:
+      in: query
+      name: orderBy
+      description: The field to order by in the response results
+      required: false
+      schema:
+        type: string
+        example: toughness
+    random:
+      in: query
+      name: random
+      description: Fetch any number of cards (controlled by pageSize) randomly
+      required: false
+      schema:
+        type: integer
+        example: 1
+        default: 0
+        enum:
+          - 0
+          - 1
+    contains:
+      in: query
+      name: contains
+      description: Filter cards based on whether or not they have a specific field available (like imageUrl)
+      required: false
+      schema:
+        type: string
+        example: imageUrl
+    id:
+      in: query
+      name: id
+      description: A unique id for this card. It is made up by doing an SHA1 hash of setCode + cardName + cardImageName
+      required: false
+      schema:
+        type: string
+        example: 7bd30146-08e5-56c0-ae62-d33d169932f4
+    multiverseid:
+      in: query
+      name: multiverseid
+      description: The multiverseid of the card on Wizard’s Gatherer web page. Cards from sets that do not exist on Gatherer will NOT have a multiverseid. Sets not on Gatherer are ATH, ITP, DKM, RQS, DPA and all sets with a 4 letter code that starts with a lowercase ‘p’
+      required: false
+      schema:
+        type: integer
+        example: 413041
   schemas:
     CommonError:
       type: object
@@ -197,6 +611,7 @@ components:
           nullable: true
         card_uuids:
           type: array
+          description: The uuids of the cards from this deck
           items:
             type: string
             example: 6aa99441-19c1-4e31-816d-a5882fae48af
@@ -234,6 +649,7 @@ components:
           example: Condemn
         names:
           type: array
+          description: Only used for split, flip and dual cards. Will contain all the names on this card, front or back
           items:
             type: string
             example: Archangel Avacyn
@@ -261,7 +677,7 @@ components:
         manaCost:
           type: string
           description: The mana cost of this card. Consists of one or more mana symbols. (use cmc and colors to query)
-          example: {3}{G}{G}
+          example: "{3}{G}{G}"
           nullable: true
         cmc:
           type: integer
@@ -269,11 +685,13 @@ components:
           example: 1
         colors:
           type: array
+          description: The card colors. Usually this is derived from the casting cost, but some cards are special (like the back of dual sided cards and Ghostfire).
           items:
             type: string
             example: White
         colorIdentity:
           type: array
+          description: The card’s color identity, by color code. [“Red”, “Blue”] becomes [“R”, “U”]. A card’s color identity includes colors from the card’s rules text
           items:
             type: string
             example: W
@@ -287,19 +705,218 @@ components:
           items:
             type: string
             example: Legendary
+            enum:
+              - Basic
+              - Legendary
+              - Snow
+              - World
+              - Ongoing
         subtypes:
           type: array
+          description: The subtypes of the card. These appear to the right of the dash in a card type. Usually each word is its own subtype
           items:
             type: string
             example: Arcane
+            enum:
+              - Trap
+              - Arcane
+              - Equipment
+              - Aura
+              - Human
+              - Rat
+              - Squirrel
         types:
           type: array
+          description: The types of the card. These appear to the left of the dash in a card type
           items:
             type: string
             example: Vanguard
-# TODO finish adding card properties
+            enum:
+              - Artifact
+              - Conspiracy
+              - Creature
+              - Enchantment
+              - Instant
+              - Land
+              - Phenomenon
+              - Plane
+              - Planeswalker
+              - Scheme
+              - Sorcery
+              - Tribal
+              - Vanguard
+        rarity:
+          type: string
+          description: The rarity of the card
+          enum:
+            - Common
+            - Uncommon
+            - Rare
+            - Mythic Rare
+            - Special
+            - Basic Land
+          example: Common
+        text:
+          type: string
+          description: The oracle text of the card. May contain mana symbols and other symbols
+          example: Archangel Avacyn’s delayed triggered ability won’t cause it to transform back into Archangel Avacyn if it has already transformed into Avacyn, the Purifier, perhaps because several creatures died in one turn
+        flavor:
+          type: string
+          description: The flavor text of the card
+          example: Both part of the Legacy and an individual in his own right, the silver golem Karn is haunted by a single, terrible incident
+        artist:
+          type: string
+          description: The artist of the card. This may not match what is on the card as MTGJSON corrects many card misprints
+          example: Anthony S. Waters
+        number:
+          type: string
+          description: The card number. This is printed at the bottom-center of the card in small text. This is a string, not an integer, because some cards have letters in their numbers
+          example: 2★
+        power:
+          type: string
+          description: The power of the card. This is only present for creatures. This is a string, not an integer, because some cards have powers like “1+*”
+          example: 1+
+        toughness:
+          type: string
+          description: The toughness of the card. This is only present for creatures. This is a string, not an integer, because some cards have toughness like “1+*”
+          example: 1*
+        loyalty:
+          type: string
+          description: The loyalty of the card. This is only present for planeswalkers
+          example: X
+        variations:
+          type: array
+          description: If a card has alternate art (for example, 4 different Forests, or the 2 Brothers Yamazaki) then each other variation’s multiverseid will be listed here, NOT including the current card’s multiverseid
+          items:
+            type: string
+            example: 6aa99441-19c1-4e31-816d-a5882fae48af
+        watermark:
+          type: string
+          description: The watermark on the card. Note! Split cards don’t currently have this field set, despite having a watermark on each side of the split card
+        border:
+          type: string
+          description: If the border for this specific card is DIFFERENT than the border specified in the top level set JSON, then it will be specified here. (i.e. Unglued has silver borders, except for the lands which are black bordered)
+        isTimeShifted:
+          type: boolean
+          description: If this card was a timeshifted card in the set
+          example: false
+        hand:
+          type: string
+          description: Maximum hand size modifier. Only exists for Vanguard cards
+          example: +1
+        life:
+          type: string
+          description: Starting life total modifier. Only exists for Vanguard cards
+          example: -3
+        isReserved:
+          type: boolean
+          description: Set to true if this card is reserved by Wizards Official Reprint Policy
+          example: false
+        releaseDate:
+          type: string
+          description: The date this card was released. This is only set for promo cards. The date may not be accurate to an exact day and month, thus only a partial date may be set (YYYY-MM-DD or YYYY-MM or YYYY). Some promo cards do not have a known release date
+          example: 2021-02-12
+        isStarter:
+          type: boolean
+          description: Set to true if this card was only released as part of a core box set. These are technically part of the core sets and are tournament legal despite not being available in boosters
+          example: false
+        rulings:
+          type: array
+          description: The rulings for the card. An array of objects, each object having ‘date’ and ‘text’ keys
+          items:
+            $ref: '#/components/schemas/RulingResource'
+        foreignNames:
+          type: array
+          description: Foreign language names for the card, if this card in this set was printed in another language. An array of objects, each object having ‘language’, ‘name’ and ‘multiverseid’ keys. Not available for all sets
+          items:
+            $ref: '#/components/schemas/ForeignNameResource'
+        imageUrl:
+          type: string
+          description: The image url for a card. Only exists if the card has a multiverse id
+          example: http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=148411&type=card
+        printings:
+          type: array
+          description: The sets that this card was printed in, expressed as an array of set codes
+          items:
+            type: string
+            example: '10E'
+        originalText:
+          type: string
+          description: The original text on the card at the time it was printed. This field is not available for promo cards
+          example: First strike (This creature deals combat damage before creatures without first strike.)\nWhen Ancestor's Chosen comes into play, you gain 1 life for each card in your graveyard
+        originalType:
+          type: string
+          description: The original type on the card at the time it was printed. This field is not available for promo cards
+          example: Creature - Angel
+        gameFormat:
+          type: string
+          description: The game format, such as Commander, Standard, Legacy, etc. (when used, legality defaults to Legal unless supplied)
+          example: Legacy
+          enum:
+            - Amonkhet Block
+            - Battle for Zendikar Block
+            - Classic
+            - Commander
+            - Extended
+            - Freeform
+            - Ice Age Block
+            - Innistrad Block
+            - Invasion Block
+            - Kaladesh Block
+            - Kamigawa Block
+            - Khans of Tarkir Block
+            - Legacy
+            - Lorwyn-Shadowmoor Block
+            - Masques Block
+            - Mirage Block
+            - Mirrodin Block
+            - Modern
+            - Odyssey Block
+            - Onslaught Block
+            - Prismatic
+            - Ravnica Block
+            - Return to Ravnica Block
+            - Scars of Mirrodin Block
+            - Shadows over Innistrad Block
+            - Shards of Alara Block
+            - Singleton 100
+            - Standard
+            - Tempest Block
+            - Theros Block
+            - Time Spiral Block
+            - Tribal Wars Legacy
+            - Un-Sets
+            - Urza Block
+            - Vintage
+            - Zendikar Block
+        legality:
+          type: string
+          description: The legality of the card for a given format, such as Legal, Banned or Restricted
+          example: Legal
+          enum:
+            - Legal
+            - Banned
+            - Restricted
+        legalities:
+          type: array
+          description: Which game formats this card is legal, restricted or banned in. An array of objects, each object having ‘format’ and ‘legality’
+          items:
+            $ref: '#/components/schemas/LegalityResource'
+        source:
+          type: string
+          description: For promo cards, this is where this card was originally obtained. For box sets that are theme decks, this is which theme deck the card is from
+        set:
+          type: string
+          description: The set the card belongs to (set code)
+          example: KTK
+        setName:
+          type: string
+          description: The name of the set the card belongs to
+          example: Khans of Tarkir
+        # TODO finish adding card properties
         deck_uuids:
           type: array
+          description: The uuids of all decks containing this card
           items:
             type: string
             example: 4a97a08c-c853-4c51-84c8-72e54928cbfa
@@ -311,4 +928,75 @@ components:
           type: string
           description: Record update time
           example: 2021-02-12T08:51:50.000000Z
+      additionalProperties: false
+    RulingResource:
+      type: object
+      required:
+        - date
+        - text
+      properties:
+        date:
+          type: string
+          description: Ruling's date
+          example: 2021-02-12
+        text:
+          type: string
+          description: Ruling's text
+          example: Vanguard cards can be used only in a format that allows them (such as Limited events using the Mystery Booster set). Each player may begin the game with up to one vanguard card they own in the command zone. This card doesn’t count towards the minimum deck size
+      additionalProperties: false
+    ForeignNameResource:
+      type: object
+      required:
+        - language
+        - name
+        - multiverseid
+      properties:
+        language:
+          type: string
+          description: The language the card is printed in
+          example: Italian
+        name:
+          type: string
+          description: The card name. For split, double-faced and flip cards, just the name of one side of the card. Basically each ‘sub-card’ has its own record
+          example: Arcangelo Avacyn
+        multiverseId:
+          type: integer
+          description: The multiverseId of the card on Wizard’s Gatherer web page. Cards from sets that do not exist on Gatherer will NOT have a multiverseid. Sets not on Gatherer are ATH, ITP, DKM, RQS, DPA and all sets with a 4 letter code that starts with a lowercase ‘p’
+          example: 182282
+          nullable: true
+        text:
+          type: string
+          description: The oracle text of the card. May contain mana symbols and other symbols
+          example: Archangel Avacyn’s delayed triggered ability won’t cause it to transform back into Archangel Avacyn if it has already transformed into Avacyn, the Purifier, perhaps because several creatures died in one turn
+        type:
+          type: string
+          description: The card type. This is the type you would see on the card if printed today. Note! The dash is a UTF8 ‘long dash’ as per the MTG rules
+          example: Creature — Human Cleric
+        flavor:
+          type: string
+          description: The flavor text of the card
+          example: Both part of the Legacy and an individual in his own right, the silver golem Karn is haunted by a single, terrible incident
+        imageUrl:
+          type: string
+          description: The image url for a card. Only exists if the card has a multiverse id
+          example: http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=148411&type=card
+      additionalProperties: false
+    LegalityResource:
+      type: object
+      required:
+        - format
+        - legality
+      properties:
+        format:
+          type: string
+          description: The game format, such as Commander, Standard, Legacy, etc. (when used, legality defaults to Legal unless supplied)
+          example: Legacy
+        legality:
+          type: string
+          description: The legality of the card for a given format, such as Legal, Banned or Restricted
+          example: Legal
+          enum:
+            - Legal
+            - Banned
+            - Restricted
       additionalProperties: false

@@ -4,7 +4,9 @@ namespace Database\Factories;
 
 use App\Enums\Border;
 use App\Enums\Color;
+use App\Enums\Format;
 use App\Enums\Layout;
+use App\Enums\Legality;
 use App\Enums\Rarity;
 use App\Enums\Subtype;
 use App\Enums\Supertype;
@@ -44,6 +46,15 @@ class CardFactory extends Factory
                 'name'         => fake($locale)->name,
                 'language'     => fake($locale)->languageCode,
                 'multiverseid' => fake($locale)->numberBetween(1, 182294),
+            ];
+        }
+
+        $legalities = [];
+        for ($i = 0; $i < fake()->numberBetween(0, 5); $i++) {
+            $format = fake()->randomElement(Format::cases())->value;
+            $legalities[$format] = [
+                'format'   => $format,
+                'legality' => fake()->randomElement(Legality::cases())->value,
             ];
         }
 
@@ -91,7 +102,9 @@ class CardFactory extends Factory
             'printings'     => [],
             'originalText'  => fake()->text,
             'originalType'  => $fullType,
-            'legalities'    => null,
+            'gameFormat'    => fake()->randomElement(Format::cases())->value,
+            'legality'      => fake()->randomElement(Legality::cases())->value,
+            'legalities'    => array_values($legalities),
             'source'        => fake()->word,
             'imageUrl'      => null,
             'set'           => fake()->word,

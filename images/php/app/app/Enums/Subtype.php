@@ -14,4 +14,10 @@ enum Subtype: string
     case RAT = 'Rat';
     case SQUIRREL = 'Squirrel';
     case ANGEL = 'Angel';
+    case ADVISOR = 'Advisor';
+    case AJANI = 'Ajani';
+    case ALARA = 'Alara';
+    case ALLY = 'Ally';
+    case ANTELOPE = 'Antelope';
+    case APE = 'Ape';
 }

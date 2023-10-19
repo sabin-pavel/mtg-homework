@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\Color;
+use App\Enums\Format;
 use App\Enums\Layout;
+use App\Enums\Legality;
 use App\Enums\Rarity;
 use App\Enums\Subtype;
 use App\Enums\Supertype;
@@ -38,7 +40,14 @@ dataset(
                 'variations'    => null,
                 'watermark'     => null,
                 'printings'     => [],
-                'legalities'    => null,
+                'gameFormat'    => $gameFormat = fake()->randomElement(Format::cases())->value,
+                'legality'      => $legality = fake()->randomElement(Legality::cases())->value,
+                'legalities'    => [
+                    [
+                        'format'   => $gameFormat,
+                        'legality' => $legality,
+                    ]
+                ],
                 'imageUrl'      => null,
                 'set'           => fake()->word,
                 'setName'       => implode('|', fake()->words),

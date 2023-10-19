@@ -45,6 +45,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property $printings
  * @property $originalText
  * @property $originalType
+ * @property $gameFormat
+ * @property $legality
  * @property $legalities
  * @property $source
  * @property $imageUrl
@@ -101,6 +103,8 @@ class Card extends Model
         'printings',
         'originalText',
         'originalType',
+        'gameFormat',
+        'legality',
         'legalities',
         'source',
         'imageUrl',

@@ -47,6 +47,8 @@ return new class extends Migration
             $table->json('printings')->nullable();
             $table->text('originalText')->nullable();
             $table->string('originalType')->nullable();
+            $table->string('gameFormat')->nullable();
+            $table->string('legality')->nullable();
             $table->json('legalities')->nullable();
             $table->string('source')->nullable();
             $table->text('imageUrl')->nullable();

@@ -6,17 +6,17 @@ namespace App\Enums;
 
 enum Types: string
 {
-    case INSTANT = 'Instant';
-    case SORCERY = 'Sorcery';
     case ARTIFACT = 'Artifact';
+    case CONSPIRACY = 'Conspiracy';
     case CREATURE = 'Creature';
     case ENCHANTMENT = 'Enchantment';
+    case INSTANT = 'Instant';
     case LAND = 'Land';
+    case PHENOMENON = 'Phenomenon';
     case PLANE = 'Plane';
     case PLANESWALKER = 'Planeswalker';
-    case CONSPIRACY = 'Conspiracy';
-    case PHENOMENON = 'Phenomenon';
     case SCHEME = 'Scheme';
+    case SORCERY = 'Sorcery';
     case TRIBAL = 'Tribal';
     case VANGUARD = 'Vanguard';
 }
