@@ -1,6 +1,8 @@
-FROM php:8.1.9-fpm-alpine3.16
+FROM php:8.1.23-fpm-alpine3.16
+
 # lumen packages
 RUN docker-php-ext-install mysqli pdo_mysql
+
 # memcached
 ENV MEMCACHED_DEPS zlib-dev libmemcached-dev cyrus-sasl-dev
 RUN apk add --no-cache --update libmemcached-libs zlib
@@ -13,4 +15,5 @@ RUN set -xe \
     && rm -rf /tmp/* \
     && apk del .memcached-deps .phpize-deps
 
-RUN chown www-data:www-data -R ./storage
+# Install & Run: composer command
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

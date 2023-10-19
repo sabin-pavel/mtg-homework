@@ -7,12 +7,12 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./images/php/app/public:/var/www/html/app/public
+      - ./public:/var/www/html/public
   php:
     build: images/php
     volumes:
-      - ./images/php:/var/www/html
-    working_dir: /var/www/html/app
+      - ./:/var/www/html
+    working_dir: /var/www/html
     command: php-fpm
     links:
       - db
@@ -38,9 +38,9 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
   cache:
     image: memcached:1.6-alpine

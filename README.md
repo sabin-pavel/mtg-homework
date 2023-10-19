@@ -29,22 +29,13 @@ git clone https://github.com/sabin-pavel/mtg-homework.git
 cd mtg-homework
 ```
 
-## Create Lumen App
-
-now, create the app in the `images/php` directory named `app`
-
-```bash
-docker run --rm -it -v $(pwd)/images/php:/app $(docker build -q .) composer create-project --prefer-dist laravel/lumen ./app
-```
-
 ### Configuration
 
-There are two configurations using `.env` files. One `.env` file for docker-compose.yaml and another for the php application.
+There is one configuration using `.env` file for the php application.
 
 ```sh
-# copy both files and make changes to them if needed
-cp .env.docker.example .env
-cp .env.app.example images/php/app/.env
+# copy and update it
+cp .env.example .env
 ```
 
 To change configuration values, look in the `docker-compose.yml` file and change the `php` container's environment variables. These directly correlate to the Lumen environment variables.
@@ -63,12 +54,14 @@ To change configuration values, look in the `docker-compose.yml` file and change
 docker-compose up --build -d
 ```
 
-Navigate to [http://localhost:80](http://localhost:80) or http://mtg-homework (after adding `mtg-homework` in your hosts file) and you should see something like this
+Navigate to [http://localhost:80](http://localhost:80) or http://mtg-homework (after adding `mtg-homework` in your hosts file) and you should see something like this `Lumen (10.0.1) (Laravel Components ^10.0)`
 
-### Stop Everything
+## Composer install
 
-```bash
-docker-compose down
+```sh
+docker-compose exec php sh
+# inside the container
+php composer install
 ```
 
 ## Running Artisan commands
@@ -78,4 +71,29 @@ docker-compose exec php sh
 # inside the container
 php artisan migrate
 php artisan cache:clear
+./vendor/bin/pest
 ```
+
+## Running tests with pest
+
+!NOTE! Make sure you run the migrations first
+
+```sh
+docker-compose exec php sh
+# inside the container
+./vendor/bin/pest
+```
+
+### Stop Everything
+
+```bash
+docker-compose down
+```
+
+## Postman collection
+
+I've included a postman collection [MTG.postman_collection.json](storage/app/public/MTG.postman_collection.json).
+
+## API schema
+
+I've included an openapi [schema.yaml](storage/app/public/schema.yaml) for a better understanding of the API endpoints
