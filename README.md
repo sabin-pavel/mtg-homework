@@ -61,7 +61,7 @@ Navigate to [http://localhost:80](http://localhost:80) or http://mtg-homework (a
 ```sh
 docker-compose exec php sh
 # inside the container
-php composer install
+composer install
 ```
 
 ## Running Artisan commands

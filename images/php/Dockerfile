@@ -17,3 +17,7 @@ RUN set -xe \
 
 # Install & Run: composer command
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
+COPY --chown=www-data:www-data . /var/www/html
+
+USER www-data
