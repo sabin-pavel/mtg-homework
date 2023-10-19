@@ -42,12 +42,6 @@ dataset(
                 'printings'     => [],
                 'gameFormat'    => $gameFormat = fake()->randomElement(Format::cases())->value,
                 'legality'      => $legality = fake()->randomElement(Legality::cases())->value,
-                'legalities'    => [
-                    [
-                        'format'   => $gameFormat,
-                        'legality' => $legality,
-                    ]
-                ],
                 'imageUrl'      => null,
                 'set'           => fake()->word,
                 'setName'       => implode('|', fake()->words),
